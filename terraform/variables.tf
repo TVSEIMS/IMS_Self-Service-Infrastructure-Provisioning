@@ -1,15 +1,2 @@
-variable "region" {
-  default = "ap-south-1"
-}
-
-variable "ami_id" {
-  description = "AMI ID for EC2"
-}
-
-variable "instance_type" {
-  default = "t2.micro"
-}
-
-variable "instance_name" {
-  default = "github-terraform-instance"
-}
+variable "vm_name" {}
+variable "vm_size" {}
