@@ -7,14 +7,11 @@ on:
 jobs:
 
   validate:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Validate Inputs
         run: |
-
           VM_NAME="${{ github.event.client_payload.vmName }}"
           VM_SIZE="${{ github.event.client_payload.vmSize }}"
 
@@ -30,16 +27,55 @@ jobs:
 
           echo "Validation Successful"
 
+      - name: Print Payload
+        run: |
+          echo "VM Name: ${{ github.event.client_payload.vmName }}"
+          echo "VM Size: ${{ github.event.client_payload.vmSize }}"
+
+---
+
   approval:
-
     needs: validate
-
     runs-on: ubuntu-latest
 
     environment:
       name: Production
 
     steps:
-
-      - name: Approved
+      - name: Approval Step
         run: echo "Request Approved Successfully"
+
+---
+
+  terraform:
+    needs: approval
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Set Terraform Variables
+        run: |
+          echo "TF_VAR_vm_name=${{ github.event.client_payload.vmName }}" >> $GITHUB_ENV
+          echo "TF_VAR_vm_size=${{ github.event.client_payload.vmSize }}" >> $GITHUB_ENV
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: terraform/
+
+      - name: Terraform Validate
+        run: terraform validate
+        working-directory: terraform/
+
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: terraform/
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform/
