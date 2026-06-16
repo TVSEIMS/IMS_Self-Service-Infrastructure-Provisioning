@@ -1,12 +1,14 @@
-provider "aws" {
-  region = var.region
+terraform {
+  required_providers {
+    null = {
+      source = "hashicorp/null"
+    }
+  }
 }
 
-resource "aws_instance" "app" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-
-  tags = {
-    Name = var.instance_name
+resource "null_resource" "vm" {
+  triggers = {
+    vm_name = var.vm_name
+    vm_size = var.vm_size
   }
 }
