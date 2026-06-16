@@ -17,14 +17,15 @@ jobs:
 
           VM_NAME="${{ github.event.client_payload.vmName }}"
           VM_SIZE="${{ github.event.client_payload.vmSize }}"
+          ACTION="${{ github.event.client_payload.action }}"
 
           if [ -z "$VM_NAME" ]; then
             echo "VM Name is missing"
             exit 1
           fi
 
-          if [ -z "$VM_SIZE" ]; then
-            echo "VM Size is missing"
+          if [ -z "$ACTION" ]; then
+            echo "Action is missing"
             exit 1
           fi
 
@@ -43,3 +44,39 @@ jobs:
 
       - name: Approved
         run: echo "Request Approved Successfully"
+
+  execute:
+
+    needs: approval
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Handle VM Requests
+        run: |
+
+          ACTION="${{ github.event.client_payload.action }}"
+          VM_NAME="${{ github.event.client_payload.vmName }}"
+          VM_SIZE="${{ github.event.client_payload.vmSize }}"
+
+          echo "Processing Request..."
+          echo "Action: $ACTION"
+          echo "VM Name: $VM_NAME"
+
+          if [ "$ACTION" == "create-vm" ]; then
+            echo "Creating VM..."
+            echo "VM $VM_NAME created (SIMULATED)"
+
+          elif [ "$ACTION" == "scale-vm" ]; then
+            echo "Scaling VM..."
+            echo "VM $VM_NAME scaled (SIMULATED)"
+
+          elif [ "$ACTION" == "delete-vm" ]; then
+            echo "Deleting VM..."
+            echo "VM $VM_NAME deleted (SIMULATED)"
+
+          else
+            echo "Invalid action"
+            exit 1
+          fi
