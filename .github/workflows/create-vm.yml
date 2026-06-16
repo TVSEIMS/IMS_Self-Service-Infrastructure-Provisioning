@@ -30,7 +30,16 @@ jobs:
 
           echo "Validation Successful"
 
-      - name: Print Payload
-        run: |
-          echo "VM Name: ${{ github.event.client_payload.vmName }}"
-          echo "VM Size: ${{ github.event.client_payload.vmSize }}"
+  approval:
+
+    needs: validate
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: Production
+
+    steps:
+
+      - name: Approved
+        run: echo "Request Approved Successfully"
